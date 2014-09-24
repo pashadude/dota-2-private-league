@@ -1,0 +1,21 @@
+{
+
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "/var/www/dota2_pl"
+		}
+	],
+
+    "settings":
+    {
+        "xdebug": {
+            "url": "http://localhost/dota2_pl/index.php",
+            "super_globals": true,
+            "close_on_stop": true
+        }
+    }
+
+   
+}

@@ -1,0 +1,19 @@
+{
+    "name": "kronusme/dota2-api",
+    "description": "DotA 2 Web API PHP wrapper",
+    "license": "MIT",
+    "type": "library",
+    "keywords": ["dota2", "api", "wrapper"],
+    "authors": [
+        {
+            "name": "KronuS Me",
+            "email": "kronusme@gmail.com",
+            "homepage":"http://kronus.me",
+            "role":"Developer"
+        }
+    ],
+    "require": {
+        "php": ">5.2"
+	"koraktor/steam-condenser": "~1.3.8"
+    }
+}
