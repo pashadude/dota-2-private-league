@@ -19,15 +19,15 @@ function steamid2dotaid($playname){
 }
 
 
-function dotastats($dota_id) {
+function dotasname($dota_id) {
 
 	$players_mapper_web = new players_mapper_web();
 	$players_info = $players_mapper_web->add_id($dota_id)->load();
 	foreach($players_info as $player_info) {
-	    $player_info->get('personaname');
+	    $name=$player_info->get('personaname');
 	    //echo $team->get('rating');
 	}
-	return $players_info;
+	return $name;
 }
 
 function getLastMatches ($dota_id){
@@ -41,6 +41,19 @@ function getLastMatches ($dota_id){
 	    $mm->save($match);
 	    //print_r($mm);
 	}
+}
+
+function getMatchPlayers ($slots, $players, $teamname){
+	for ($i=0; $i < 5; $i++) { 
+		$steam_id = player::convert_id($slots[$teamname][$i]->get('account_id'));		
+		if($steam_id != player::ANONYMOUS) {
+	        $name = $players[$steam_id]->get('personaname');
+	    } else {
+	    	$name = "anonymous player";
+	    }
+	    $team[$i] = $name;
+	}
+	return $team;
 }
 
 function getMatchResults ($match_id){
@@ -61,35 +74,32 @@ function getMatchResults ($match_id){
 	
 	$players = $players_mapper_web->load();
 	$slots = $match->get_all_slots_divided();
-	$results = array();
-	print_r($slots);
+	$results = array ();
 
-	/*foreach ($slots as $k=>$team) {
-		print_r($slots['dire']);
-		foreach ($variable as $key => $value) {
-			# code...
-		}
-	}*/
-
-	/*if($match->get('radiant_win')){
-		foreach ($variable as $key => $value) {
-			# code...
-		}
-		$steam_id = player::convert_id($slot->get('account_id'));
+    if($match->get('radiant_win')){
+		$results['winners'] = getMatchPlayers ($slots, $players, 'radiant');
+		$results['losers'] = getMatchPlayers ($slots, $players, 'dire');
 	} else {
-
+		$results['winners'] = getMatchPlayers ($slots, $players, 'dire');
+		$results['losers'] = getMatchPlayers ($slots, $players, 'radiant');
 	}
-	foreach ($variable as $key => $value) {
-		# code...
-	}*/
+	
+	return $results;
 }
 
 
+//convertor
+//$doter = steamid2dotaid('pashadudue');
 
-$doter = steamid2dotaid('pashadudue');
-getMatchResults(37626434);
-//echo $doter;
-//print_r (dotastats($doter));
+//match results
+//print_r (getMatchResults(37626434));
+
+//one alias
+//echo dotasname(steamid2dotaid('pashadudue'));
+
+
+
+
 
 //getLastMatches ($doter);
 
