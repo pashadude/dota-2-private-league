@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"pl",
+				"players_info"
+			],
+			[
 				"getM",
 				"getMatchPlayers"
 			],
@@ -143,7 +147,7 @@
 			"file": "index.php",
 			"settings":
 			{
-				"buffer_size": 2665,
+				"buffer_size": 3907,
 				"line_ending": "Unix"
 			}
 		}
@@ -292,15 +296,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2665,
+						"buffer_size": 3907,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1013,
-								1013
+								3757,
+								3757
 							]
 						],
 						"settings":
@@ -412,7 +416,7 @@
 							"syntax": "Packages/PHP/PHP.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 528.0,
+						"translation.y": 2210.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
