@@ -144,10 +144,13 @@
 	"buffers":
 	[
 		{
+			"contents": "<?php\n\nrequire_once ('config.php');\nrequire_once ('vendor/koraktor/steam-condenser/lib/steam-condenser.php');\n\nfunction steamid2dotaid($playname){\n	try\n	{\n	    $id = SteamId::create($playname);\n	} \n	\n	catch (SteamCondenserException $s)\n	{\n	    echo \"steam name does not exist!\";\n	}\n\n	$id_dota = $id->getSteamId64();\n	return $id_dota;\n}\n\n\nfunction dotasname($dota_id) {\n\n	$players_mapper_web = new players_mapper_web();\n	$players_info = $players_mapper_web->add_id($dota_id)->load();\n	foreach($players_info as $player_info) {\n	    $name=$player_info->get('personaname');\n	    //echo $team->get('rating');\n	}\n	return $name;\n}\n\nfunction countDotaStatsByMatches ($dota_id){\n	$matches_mapper_web = new matches_mapper_web();\n	$matches_mapper_web->set_account_id($dota_id);\n	$matches_short_info = $matches_mapper_web->load();\n	if (empty( $matches_short_info ) ) {  \n	echo \"the user has not shared matches\";\n	} else {\n		$results = array();\n		$k = 1;\n		$results['gold_per_min'] = 0;\n		$results['xp_per_min'] = 0;\n		foreach ($matches_short_info AS $key=>$match_short_info) {\n		    $match_mapper = new match_mapper_web($key);\n		    $match = $match_mapper->load();\n		    $slots = $match->get_all_slots();\n		    	foreach ($slots as $slot) {\n		    		$steam_id = (player::convert_id($slot->get('account_id')));\n		    		if ($steam_id == $dota_id) {\n		    			$results['kills'] += $slot->get('kills');\n		    			$results['deaths'] += $slot->get('deaths');\n		    			$results['assists'] += $slot->get('assists');\n		    			//echo $slot->get('gold_per_min').\"-gold\".$slot->get('xp_per_min').\"-exp\";\n		    			$results['gold_per_min'] = ($results['gold_per_min']*($k-1) + $slot->get('gold_per_min'))/$k;\n		    			$results['xp_per_min'] = ($results['xp_per_min']*($k-1) + $slot->get('xp_per_min'))/$k;\n						if ($match->get('radiant_win')) {\n							if ($slot->get('player_slot')<128) {\n								$results['wins']+=1;\n							} else {\n								$results['losses']+=1;\n							}\n						} else {\n							if ($slot->get('player_slot')<128) {\n								$results['losses']+=1;\n							} else {\n								$results['wins']+=1;\n							}\n						}\n		    		}\n		    	}\n		    $k++;\n		}\n		return $results;\n	}\n}\n\nfunction checkMatchPlayers ($team, $match){\n	\n}\n\n\nfunction getMatchTeamPlayers ($slots, $players, $teamname){\n	for ($i=0; $i < 5; $i++) { \n		$steam_id = player::convert_id($slots[$teamname][$i]->get('account_id'));		\n		if($steam_id != player::ANONYMOUS) {\n	        $name = $players[$steam_id]->get('personaname');\n	    } else {\n	    	$name = \"anonymous player\";\n	    }\n	    $team[$i] = $name;\n	}\n	return $team;\n}\n\nfunction getMatchResults ($match_id){\n	if (isset($_GET['match_id'])) {\n	    $match_id = intval($_GET['match_id']);\n	}\n	$match_mapper_web = new match_mapper_web($match_id);\n	$match = $match_mapper_web->load();\n	if (is_null($match)) {\n	    die('<p>Match does not exists.</p>');\n	}\n	$players_mapper_web = new players_mapper_web();\n	foreach($match->get_all_slots() as $slot) {\n	    if ($slot->get('account_id') != player::ANONYMOUS) {\n	        $players_mapper_web->add_id(player::convert_id($slot->get('account_id')));\n	    }\n	}\n	\n	$players = $players_mapper_web->load();\n	$slots = $match->get_all_slots_divided();\n	$results = array ();\n\n    if($match->get('radiant_win')){\n		$results['winners'] = getMatchTeamPlayers ($slots, $players, 'radiant');\n		$results['losers'] = getMatchTeamPlayers ($slots, $players, 'dire');\n	} else {\n		$results['winners'] = getMatchTeamPlayers ($slots, $players, 'dire');\n		$results['losers'] = getMatchTeamPlayers ($slots, $players, 'radiant');\n	}\n	\n	return $results;\n}\n\n\n//convertor\n// steamid2dotaid('pys_paul');\n\n\n\n\n//match results\n//print_r (getMatchResults(37626434));\n\n//one alias\n//echo dotasname(steamid2dotaid('pashadudue'));\n\n//statistics by player\n//print_r (countDotaStatsByMatches(steamid2dotaid('Power_Never')));\n\n\n//print_r (countDotaStatsByMatches(steamid2dotaid(76561198073529900)));\n//echo dotasname(steamid2dotaid(76561198073529900));\n\n\n\n\n\n\n\n\n//all_league_matchez\n\n//matchez of certain league, certain date, certain users\n\n\n\n?>",
 			"file": "index.php",
+			"file_size": 4324,
+			"file_write_time": 130567673586832560,
 			"settings":
 			{
-				"buffer_size": 3907,
+				"buffer_size": 4044,
 				"line_ending": "Unix"
 			}
 		}
@@ -296,15 +299,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3907,
+						"buffer_size": 4044,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3757,
-								3757
+								3901,
+								3901
 							]
 						],
 						"settings":
@@ -416,7 +419,7 @@
 							"syntax": "Packages/PHP/PHP.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2210.0,
+						"translation.y": 1989.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

@@ -24,10 +24,10 @@ function dotasname($dota_id) {
 	$players_mapper_web = new players_mapper_web();
 	$players_info = $players_mapper_web->add_id($dota_id)->load();
 	foreach($players_info as $player_info) {
-	    $name=$player_info->get('personaname');
-	    //echo $team->get('rating');
+	    $name = $player_info->get('personaname');
 	}
 	return $name;
+
 }
 
 function countDotaStatsByMatches ($dota_id){
@@ -75,8 +75,48 @@ function countDotaStatsByMatches ($dota_id){
 	}
 }
 
-function checkMatchPlayers ($team, $match){
-	
+
+
+function getMatchInfo ($match_id){
+	$results = array();
+	if (isset($_GET['match_id'])) {
+	    $match_id = intval($_GET['match_id']);
+	}
+	$match_mapper_web = new match_mapper_web($match_id);
+	$match = $match_mapper_web->load();
+	if (is_null($match)) {
+	    die('<p>Match does not exists.</p>');
+	}
+
+	//print_r ($match);
+
+	$results['starttime'] = $match->get('start_time');
+	for ($i=0; $i < 5; $i++) { 
+		$slot = $match->get_slot($i);
+		$id = player::convert_id($slot->get('account_id'));
+		//print_r ($id);
+		
+		if($id != player::ANONYMOUS) {
+			$results['player'][$i]['name'] = dotasname($id);
+		} else {
+			$results['player'][$i]['name'] = 'anonymous player';
+		}
+
+		$j = $i + 128;
+		$k = $i + 5;
+
+		$slot = $match->get_slot($j);
+		$id = player::convert_id($slot->get('account_id'));
+		//print_r ($id);
+		
+		if($id != player::ANONYMOUS) {
+			//echo $id." ";
+			$results['player'][$k]['name'] = dotasname($id);
+		} else {
+			$results['player'][$k]['name'] = 'anonymous player';
+		}
+	}
+	return $results;	
 }
 
 
@@ -134,11 +174,21 @@ function getMatchResults ($match_id){
 //match results
 //print_r (getMatchResults(37626434));
 
-//one alias
+//dot alias
 //echo dotasname(steamid2dotaid('pashadudue'));
+//dotasname(76561198067910001);
 
 //statistics by player
-print_r (countDotaStatsByMatches(steamid2dotaid('pys_paul')));
+//print_r (countDotaStatsByMatches(steamid2dotaid('Power_Never')));
+
+
+//print_r (countDotaStatsByMatches(steamid2dotaid(76561198073529900)));
+//echo dotasname(steamid2dotaid(76561198073529900));
+
+//match data neededto check if it is the match we are looking for
+//print_r(getMatchInfo(37626434));
+
+
 
 
 
