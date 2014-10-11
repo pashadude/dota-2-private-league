@@ -133,6 +133,22 @@ function getMatchTeamPlayers ($slots, $players, $teamname){
 	return $team;
 }
 
+function getLeaguesId($name) {
+	$leagues_mapper_web = new leagues_mapper_web();
+	$leagues = $leagues_mapper_web->load();
+	foreach($leagues as $league) {
+	    if ( $league->get('name') == $name) {
+	    	return $league->get('leagueid');
+	    }
+	}
+}
+
+function getLeagueMatchez($id){
+	$league_mapper = new league_mapper($id);
+	$games = $league_mapper->load();
+	return $games;
+}
+
 function getMatchResults ($match_id){
 	if (isset($_GET['match_id'])) {
 	    $match_id = intval($_GET['match_id']);
@@ -189,10 +205,12 @@ function getMatchResults ($match_id){
 //print_r(getMatchInfo(37626434));
 
 
-
-
+//league id by name
+//echo getLeaguesId("ProveYourSkillz Tier 1: South America");
 
 //all_league_matchez
+//print_r (getLeagueMatchez(1791));
+
 
 //matchez of certain league, certain date, certain users
 
