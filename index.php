@@ -30,6 +30,13 @@ function dotasname($dota_id) {
 
 }
 
+function getAchievementTourneyResults ($data){
+	foreach ($data['ids'] as $dota_id) {
+		# code...
+	}
+
+}
+
 function countDotaStatsByMatches ($dota_id){
 	$matches_mapper_web = new matches_mapper_web();
 	$matches_mapper_web->set_account_id($dota_id);
@@ -146,7 +153,47 @@ function getLeaguesId($name) {
 function getLeagueMatchez($id){
 	$league_mapper = new league_mapper($id);
 	$games = $league_mapper->load();
-	return $games;
+	$matches_mapper_web = new matches_mapper_web();
+	$matches_mapper_web->set_league_id($id);
+	//$matches_short_info = $matches_mapper_web->load();
+	//return ($matches_short_info);
+	
+	//return $games;
+	$matches_short_info = $matches_mapper_web->load();
+    $matches = array();
+
+	$last_match_id = null;
+	$all_are_loaded = false;
+	$match_ids = array();
+	
+	while (!$all_are_loaded) {
+		if (!is_null($last_match_id)) {
+        	$matches_mapper_web->set_start_at_match_id($last_match_id - 1);
+    	}
+
+    	$matches_short_info = $matches_mapper_web->load();
+    	$matches = array();
+    	
+
+    	if (!count($matches_short_info))  {
+	        $all_are_loaded = true;
+	    }
+
+        foreach ($matches_short_info as $key=>$match_short_info) {
+        	$match_mapper = new match_mapper_web($key);
+            $match = $match_mapper->load();
+            $last_match_id = $match->get('match_id'); 
+            //echo $last_match_id;    
+        	if (!in_array($last_match_id, $match_ids)) {
+        		array_push($match_ids, $last_match_id);	
+        	} else {
+        		$all_are_loaded = true;
+        	}
+        }
+	}
+
+	return ($match_ids);
+
 }
 
 function getMatchResults ($match_id){
@@ -182,7 +229,7 @@ function getMatchResults ($match_id){
 
 
 //convertor
-// steamid2dotaid('pys_paul');
+//echo dotasname(steamid2dotaid('Power_Never'));
 
 
 
@@ -208,11 +255,17 @@ function getMatchResults ($match_id){
 //league id by name
 //echo getLeaguesId("ProveYourSkillz Tier 1: South America");
 
-//all_league_matchez
+//all_league matchez which ever took place
 //print_r (getLeagueMatchez(1791));
 
 
+//getAllLeagueMatches(1791);
+
+
 //matchez of certain league, certain date, certain users
+
+
+
 
 
 
