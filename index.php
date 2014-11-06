@@ -31,10 +31,45 @@ function dotasname($dota_id) {
 }
 
 function getAchievementTourneyResults ($data){
+	$results = array();
 	foreach ($data['ids'] as $dota_id) {
-		# code...
+		$matches_mapper_web = new matches_mapper_web();
+		$matches_mapper_web->set_account_id($dota_id);
+		$matches_short_info = $matches_mapper_web->load();
+		if (!empty( $matches_short_info ) ) { 			
+			$k = 1;
+			$results[$dota_id]['xp_per_min'] = 0;
+			foreach ($matches_short_info AS $key=>$match_short_info) {
+			    $match_mapper = new match_mapper_web($key);
+			    $match = $match_mapper->load();
+			    $starttime = ;
+	            if ($starttime <= $data['starttime']) {
+				    $slots = $match->get_all_slots();
+				    	foreach ($slots as $slot) {
+				    		$steam_id = (player::convert_id($slot->get('account_id')));
+				    		if ($steam_id == $dota_id) {
+				    			$results['xp_per_min'] = ($results[$dota_id]['xp_per_min']*($k-1) + $slot->get('xp_per_min'))/$k;
+								if ($match->get('radiant_win')) {
+									if ($slot->get('player_slot')<128) {
+										$results[$dota_id]['wins']+=1;
+									} else {
+										$results[$dota_id]['losses']+=1;
+									}
+								} else {
+									if ($slot->get('player_slot')<128) {
+										$results[$dota_id]['losses']+=1;
+									} else {
+										$results[$dota_id]['wins']+=1;
+									}
+								}
+				    		}
+				    	}
+					$k++;
+	            }
+		    }
+		} 
 	}
-
+	return $results;
 }
 
 function countDotaStatsByMatches ($dota_id){
