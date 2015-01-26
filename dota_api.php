@@ -12,6 +12,7 @@ function steamid2dotaid($playname){
 	catch (SteamCondenserException $s)
 	{
 	    echo "steam name does not exist!";
+	    //return "n/a";
 	}
 
 	$id_dota = $id->getSteamId64();
@@ -30,48 +31,64 @@ function dotasname($dota_id) {
 
 }
 
-/*
-function getAchievementTourneyResults ($data){
-	$results = array();
-	foreach ($data['ids'] as $dota_id) {
-		$matches_mapper_web = new matches_mapper_web();
-		$matches_mapper_web->set_account_id($dota_id);
-		$matches_short_info = $matches_mapper_web->load();
-		if (!empty( $matches_short_info ) ) { 			
-			$k = 1;
-			$results[$dota_id]['xp_per_min'] = 0;
-			foreach ($matches_short_info AS $key=>$match_short_info) {
-			    $match_mapper = new match_mapper_web($key);
-			    $match = $match_mapper->load();
-			    $starttime = ;
-	            if ($starttime <= $data['starttime']) {
-				    $slots = $match->get_all_slots();
-				    	foreach ($slots as $slot) {
-				    		$steam_id = (player::convert_id($slot->get('account_id')));
-				    		if ($steam_id == $dota_id) {
-				    			$results['xp_per_min'] = ($results[$dota_id]['xp_per_min']*($k-1) + $slot->get('xp_per_min'))/$k;
-								if ($match->get('radiant_win')) {
-									if ($slot->get('player_slot')<128) {
-										$results[$dota_id]['wins']+=1;
-									} else {
-										$results[$dota_id]['losses']+=1;
-									}
+
+
+function countAchProgress ($dota_id, $start_time, $end_time) {
+	$matches_mapper_web = new matches_mapper_web();
+	$matches_mapper_web->set_account_id($dota_id);
+	$matches_short_info = $matches_mapper_web->load();
+
+	if (empty( $matches_short_info ) ) {  
+	   return ("n/a");
+	} else {
+		//echo "aaa";
+		$results = array();
+		$k = 1;
+		//$results['gold_per_min'] = 0;
+		$results['xp_per_min'] = 0;
+		foreach ($matches_short_info AS $key=>$match_short_info) {
+		    $match_mapper = new match_mapper_web($key);
+		    $match = $match_mapper->load();
+		    $mtime = strtotime ($match->get('start_time'));
+		    //var_dump($mtime);
+		    //$match_time = $mtime->getTimestamp();
+		    //echo $match_time;
+            if (($mtime>=$start_time) && ($mtime<=$end_time)) {
+            	//var_dump()
+                $slots = $match->get_all_slots();
+                //var_dump($slots);
+			    	foreach ($slots as $slot) {
+			    		$steam_id = (player::convert_id($slot->get('account_id')));
+			    		if ($steam_id == $dota_id) {
+			    			//$results['kills'] += $slot->get('kills');
+			    			//$results['deaths'] += $slot->get('deaths');
+			    			//$results['assists'] += $slot->get('assists');
+			    			//echo $slot->get('gold_per_min')."-gold".$slot->get('xp_per_min')."-exp";
+			    			//$results['gold_per_min'] = ($results['gold_per_min']*($k-1) + $slot->get('gold_per_min'))/$k;
+			    			$results['xp_per_min'] = ($results['xp_per_min']*($k-1) + $slot->get('xp_per_min'))/$k;
+							if ($match->get('radiant_win')) {
+								if ($slot->get('player_slot')<128) {
+									$results['wins']+=1;
 								} else {
-									if ($slot->get('player_slot')<128) {
-										$results[$dota_id]['losses']+=1;
-									} else {
-										$results[$dota_id]['wins']+=1;
-									}
+									$results['losses']+=1;
 								}
-				    		}
-				    	}
-					$k++;
-	            }
-		    }
-		} 
+							} else {
+								if ($slot->get('player_slot')<128) {
+									$results['losses']+=1;
+								} else {
+									$results['wins']+=1;
+								}
+							}
+			    		}
+			    	}
+			    $slots = array ();	
+			    $k++;
+			}
+		}
+		return $results;
 	}
-	return $results;
-}*/
+
+}
 
 function countDotaStatsByMatches ($dota_id){
 	$matches_mapper_web = new matches_mapper_web();
@@ -274,7 +291,7 @@ function getMatchResults ($match_id){
 
 
 //dot alias
-echo dotasname(steamid2dotaid(76561198122889979));
+//echo dotasname(steamid2dotaid(76561198122889979));
 
 //statistics by player
 //print_r (countDotaStatsByMatches(steamid2dotaid('Power_Never')));
@@ -293,19 +310,6 @@ echo dotasname(steamid2dotaid(76561198122889979));
 //all_league matchez which ever took place
 //print_r (getLeagueMatchez(1791));
 //print_r (getMatchResults(969292940));
-
-
-
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-$data['ids'][0] =  steamid2dotaid();
-
-
 
 
 
